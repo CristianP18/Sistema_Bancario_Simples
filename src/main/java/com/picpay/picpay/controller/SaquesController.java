@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.picpay.picpay.DTOs.DadosSaques;
 import com.picpay.picpay.domain.saques.Saques;
 import com.picpay.picpay.domain.saques.SaquesRepository;
+import com.picpay.picpay.service.EfetuarSaque;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -24,11 +25,15 @@ import jakarta.validation.Valid;
 public class SaquesController {
 
     @Autowired
+    private EfetuarSaque efetuarSaque;
+
+    @Autowired
     private SaquesRepository repository;
     
     @PostMapping
     @Transactional
     public ResponseEntity<Saques> cadastrar(@RequestBody @Valid DadosSaques dados) {
+        efetuarSaque.efetuarSaque(dados);
         Saques resul = repository.save(new Saques(dados));
         return ResponseEntity.ok(resul);
     }
