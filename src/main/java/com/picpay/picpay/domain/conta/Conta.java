@@ -2,10 +2,10 @@ package com.picpay.picpay.domain.conta;
 
 import java.math.BigDecimal;
 
-import org.springframework.transaction.annotation.Transactional;
-
+import com.picpay.picpay.DTOs.AtualizarDadosConta;
 import com.picpay.picpay.DTOs.DadosCadastroConta;
 import com.picpay.picpay.DTOs.Tipo_conta;
+import com.picpay.picpay.domain.endereco.Endereco;
 
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -65,8 +65,15 @@ public class Conta {
         this.endereco = new Endereco(dados.endereco());
 
     }
+    public Conta atualizarDadosConta(AtualizarDadosConta dados){
+        this.name = dados.name();
+        this.senha = dados.senha();
+        this.telefone = dados.telefone();
+        this.endereco = new Endereco(dados.endereco());
+        return this;
+    }
    
-    @Transactional
+    
     public void excluir() {
         this.ativo = false;
         

@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.picpay.picpay.DTOs.AtualizarDadosConta;
 import com.picpay.picpay.DTOs.DadosCadastroConta;
 import com.picpay.picpay.domain.conta.Conta;
 import com.picpay.picpay.domain.conta.ContaRepository;
@@ -40,9 +42,25 @@ public class ContraController {
     }
 
     @GetMapping("{id}")
-    public Optional<Conta> listarPotId(@PathVariable Long id){
+    public ResponseEntity<Optional<Conta>> listarPotId(@PathVariable Long id){
         Optional<Conta> conta = repository.findById(id);
-        return conta;
+        return ResponseEntity.ok(conta);
+    }
+
+    @PutMapping("{id}")
+    @Transactional
+    public ResponseEntity<Conta> atualizarDadosConta(@RequestBody @Valid AtualizarDadosConta dados, @PathVariable Long id){
+        Optional<Conta>conta = repository.findById(id);
+        if(conta.isPresent()){
+          Conta atualizaConta = conta.get();
+          atualizaConta.atualizarDadosConta(dados);
+          repository.save(atualizaConta);
+
+          return ResponseEntity.ok(atualizaConta);
+        }else{
+          return ResponseEntity.notFound().build();
+        }
+
     }
 
     @DeleteMapping("{id}")

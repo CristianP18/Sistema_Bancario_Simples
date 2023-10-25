@@ -1,4 +1,4 @@
-package com.picpay.picpay.domain.conta;
+package com.picpay.picpay.domain.endereco;
 
 
 
