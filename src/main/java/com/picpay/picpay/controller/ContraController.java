@@ -1,9 +1,10 @@
 package com.picpay.picpay.controller;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,14 +14,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.picpay.picpay.DTOs.AtualizarDadosConta;
 import com.picpay.picpay.DTOs.DadosCadastroConta;
+import com.picpay.picpay.DTOs.DadosListagemContas;
 import com.picpay.picpay.domain.conta.Conta;
 import com.picpay.picpay.domain.conta.ContaRepository;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 
 @RestController
 @RequestMapping("/contas")
@@ -31,26 +35,34 @@ public class ContraController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<Conta> cadastra(@RequestBody @Valid DadosCadastroConta dados){
-        Conta result = repository.save(new Conta(dados));
-        return ResponseEntity.ok(result);
-    }
+    public ResponseEntity<Conta> cadastra(@RequestBody @Valid DadosCadastroConta dados, UriComponentsBuilder uriBuilder){
+        Conta result = new Conta(dados);
+        repository.save(result);
 
+        var uri = uriBuilder.path("/contas/{id}").buildAndExpand(result.getId()).toUri();
+        return ResponseEntity.created(uri).body(result);
+    }
     @GetMapping
-    public List<Conta> listar(){
-        return repository.findAll();
+    public ResponseEntity<Object> listar(@PageableDefault(size = 10, sort = {"name"}) Pageable paginacao) {
+        var page = repository.findAllByAtivoTrue(paginacao).map(DadosListagemContas::new);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Optional<Conta>> listarPotId(@PathVariable Long id){
-        Optional<Conta> conta = repository.findById(id);
-        return ResponseEntity.ok(conta);
+    public ResponseEntity listarPotId(@PathVariable Long id){
+        var conta = repository.findById(id);
+        if(conta.isPresent()){
+            return ResponseEntity.ok(conta);
+        }else{
+            throw new ValidationException("Conta não Existe");
+        }
+        
     }
 
     @PutMapping("{id}")
     @Transactional
     public ResponseEntity<Conta> atualizarDadosConta(@RequestBody @Valid AtualizarDadosConta dados, @PathVariable Long id){
-        Optional<Conta>conta = repository.findById(id);
+        Optional<Conta> conta = repository.findById(id);
         if(conta.isPresent()){
           Conta atualizaConta = conta.get();
           atualizaConta.atualizarDadosConta(dados);

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import com.picpay.picpay.DTOs.AtualizarDadosConta;
 import com.picpay.picpay.DTOs.DadosCadastroConta;
+import com.picpay.picpay.DTOs.DadosCadastroContaTest;
 import com.picpay.picpay.DTOs.Tipo_conta;
 import com.picpay.picpay.domain.endereco.Endereco;
 
@@ -65,6 +66,17 @@ public class Conta {
         this.endereco = new Endereco(dados.endereco());
 
     }
+
+    public Conta(DadosCadastroContaTest data) {
+        this.ativo = true;
+        this.name = data.name();
+        this.senha = data.senha();
+        this.cpf = data.cpf();
+        this.telefone = data.telefone();
+        this.numero_conta = data.numero_conta();
+        this.saldo = data.saldo();
+    }
+
     public Conta atualizarDadosConta(AtualizarDadosConta dados){
         this.name = dados.name();
         this.senha = dados.senha();
@@ -78,6 +90,9 @@ public class Conta {
         this.ativo = false;
         
         
+    }
+    public boolean isPresent() {
+        return false;
     }
     
 }

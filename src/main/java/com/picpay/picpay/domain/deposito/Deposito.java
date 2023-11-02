@@ -1,6 +1,7 @@
 package com.picpay.picpay.domain.deposito;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import com.picpay.picpay.DTOs.DadosDeposito;
 
@@ -33,6 +34,7 @@ public class Deposito {
     private String cpf;
     private String telefone;
     private BigDecimal valor_deposito;
+    private LocalDateTime data;
     
 
     public Deposito(DadosDeposito dados){
@@ -42,5 +44,6 @@ public class Deposito {
         this.cpf = dados.cpf();
         this.telefone = dados.telefone();
         this.valor_deposito = dados.valor_deposito();
+        this.data = LocalDateTime.now();
     }
 }

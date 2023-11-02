@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.picpay.picpay.DTOs.DadosSaques;
 import com.picpay.picpay.domain.saques.Saques;
@@ -32,10 +33,12 @@ public class SaquesController {
     
     @PostMapping
     @Transactional
-    public ResponseEntity<Saques> cadastrar(@RequestBody @Valid DadosSaques dados) {
+    public ResponseEntity<Saques> cadastrar(@RequestBody @Valid DadosSaques dados, UriComponentsBuilder uriBuilder) {
         efetuarSaque.efetuarSaque(dados);
-        Saques resul = repository.save(new Saques(dados));
-        return ResponseEntity.ok(resul);
+        Saques resul = new Saques(dados);
+        repository.save(resul);
+        var uri = uriBuilder.path("/saques/{id}").buildAndExpand(resul.getId()).toUri();
+        return ResponseEntity.created(uri).body(resul);
     }
 
     @GetMapping

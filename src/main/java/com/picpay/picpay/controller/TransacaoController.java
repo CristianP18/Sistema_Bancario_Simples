@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.picpay.picpay.DTOs.DadosTransacao;
 import com.picpay.picpay.domain.transacao.Transacao;
@@ -32,10 +33,12 @@ public class TransacaoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<Transacao> gerarTransacao(@RequestBody @Valid DadosTransacao dados){
-        Transacao result = repository.save(new Transacao(dados));
+    public ResponseEntity<Transacao> gerarTransacao(@RequestBody @Valid DadosTransacao dados, UriComponentsBuilder uriBuilder ){
+        Transacao result = new Transacao(dados);
+        repository.save(result);
         efetuarTransacao.efetuarTransacao(dados);
-        return ResponseEntity.ok(result);
+        var uri = uriBuilder.path("/transacao/{id}").buildAndExpand(result.getId()).toUri();
+        return ResponseEntity.created(uri).body(result);
     }
 
     @GetMapping

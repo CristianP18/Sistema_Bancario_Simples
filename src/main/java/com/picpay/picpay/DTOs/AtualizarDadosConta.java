@@ -1,5 +1,6 @@
 package com.picpay.picpay.DTOs;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
 public record AtualizarDadosConta (
@@ -9,7 +10,7 @@ public record AtualizarDadosConta (
     String senha,
     @NotBlank
     String telefone,
-    @NotBlank 
+    @Valid
     DadosEndereco endereco
 ) {
 
